@@ -1,0 +1,47 @@
+trigger:
+- none
+
+variables:
+- group: Registry
+- group: ACR
+- group: DB
+- group: BACKEND
+
+resources:
+  pipelines:
+  - pipeline: kanban-app
+    source: /kanban-app
+    trigger: 
+      branches:
+      - master
+  repositories:
+  - repository: Templates
+    type: git
+    name: Templates
+
+parameters:
+- name: env
+  displayName: Environment
+  type: string
+  default: dev
+  values:
+  - dev
+  - train
+
+stages:
+- stage: Test
+  displayName: Build and restore
+  variables:
+  - ${{ if eq(parameters.env, 'train') }}:
+    - group: TRAIN
+  - ${{ if eq(parameters.env, 'dev') }}:
+    - group: DEV
+  jobs: 
+  - template: kanban-deploy.yml@Templates
+    parameters:
+      env: ${{ parameters.env }}
+      version: $(resources.pipeline.kanban-app.runName)
+
+
+
+
