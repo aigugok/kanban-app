@@ -1,9 +1,6 @@
 pipeline {
-  triggers {
-        pollSCM('* * * * *')
-    }
   environment {
-    registry = "academydevops.azurecr.io/aa/kanban-app"
+    registry = "aigugok/kanban-app"
     registryCredential = 'registry'
   }
 
